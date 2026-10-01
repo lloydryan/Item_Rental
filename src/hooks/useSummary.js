@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { today } from '../constants'
-import { getAvailableQuantity, reservationTotal, totalPaid } from '../utils/rental'
-import { categoryName, reservationById } from '../utils/lookups'
+import { getAvailableQuantity, rentalTotal, totalPaid } from '../utils/rental'
+import { categoryName } from '../utils/lookups'
 
 export function useSummary(state) {
   return useMemo(() => {
@@ -14,7 +14,7 @@ export function useSummary(state) {
 
     const income = state.payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
     const pendingPayments = state.rentals.filter((rental) => {
-      const total = reservationTotal(reservationById(state, rental.reservationId), state.items)
+      const total = rentalTotal(rental)
       return totalPaid(rental.id, state.payments) < total
     }).length
 

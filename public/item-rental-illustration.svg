@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
+  <title id="title">Event item rental illustration</title>
+  <desc id="description">A teal event tent with a booking calendar, speaker, chair, and dressed round table.</desc>
+  <defs>
+    <linearGradient id="background" x1="145" y1="105" x2="889" y2="925" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f8790"/>
+      <stop offset=".42" stop-color="#053b4b"/>
+      <stop offset="1" stop-color="#071a2f"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#008a8c"/>
+    </linearGradient>
+    <linearGradient id="tealDark" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#008f91"/>
+      <stop offset="1" stop-color="#006070"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dce8ef"/>
+    </linearGradient>
+    <linearGradient id="fabricShade" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#edf5f8"/>
+      <stop offset="1" stop-color="#b9d0dc"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(308 176) rotate(42) scale(528 364)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d4cf" stop-opacity=".52"/>
+      <stop offset="1" stop-color="#063347" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#00121f" flood-opacity=".36"/>
+    </filter>
+    <clipPath id="appShape">
+      <rect x="60" y="60" width="904" height="904" rx="230"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#appShape)">
+    <rect x="60" y="60" width="904" height="904" rx="230" fill="url(#background)"/>
+    <rect x="60" y="60" width="904" height="904" rx="230" fill="url(#glow)"/>
+    <path d="M33 490C202 275 341 230 549 247c191 16 327-47 432-164v278c-171 119-358 160-567 113C239 435 111 463 33 573Z" fill="#001b2b" opacity=".52"/>
+    <ellipse cx="564" cy="858" rx="359" ry="55" fill="#00b6b3" opacity=".35"/>
+    <ellipse cx="564" cy="849" rx="326" ry="33" fill="#002c3d" opacity=".66"/>
+
+    <!-- Tent supports -->
+    <g fill="url(#teal)">
+      <rect x="177" y="423" width="22" height="376" rx="11"/>
+      <rect x="536" y="346" width="24" height="489" rx="12"/>
+      <rect x="914" y="426" width="20" height="380" rx="10"/>
+    </g>
+
+    <!-- Rear canopy -->
+    <path d="M536 351 736 236c37 63 97 110 190 157-120-20-248-27-390-42Z" fill="url(#fabric)"/>
+    <path d="M736 236c42 61 106 114 190 157-73-16-123-26-151-32-21-33-34-75-39-125Z" fill="url(#teal)"/>
+
+    <!-- Main canopy -->
+    <path d="M155 441c15-61 45-82 103-103 125-45 213-109 252-202 58 104 121 176 214 216 63 27 133 35 202 41 20 2 31 20 30 63-27-28-52-28-77-2-30 33-61 34-92 3-29 34-62 35-96 0-31 35-67 38-108-4-31 45-77 46-116-2-29 42-67 43-105-5-31 39-67 41-105 1-30 36-65 39-102 1Z" fill="url(#fabric)" filter="url(#shadow)"/>
+    <path d="M155 441c55-47 171-84 355-111V136c-39 93-127 157-252 202-58 21-88 42-103 103Z" fill="#fff" opacity=".58"/>
+    <path d="M510 136c58 104 121 176 214 216 63 27 133 35 202 41-201-21-321-32-360-99-28-48-43-101-56-158Z" fill="url(#tealDark)"/>
+    <path d="M510 136c46 78 107 144 187 184-75-30-133-78-174-145Z" fill="#2ee5d1" opacity=".8"/>
+
+    <!-- Speaker -->
+    <g filter="url(#shadow)">
+      <path d="M694 489c0-19 16-34 35-34h126c20 0 35 15 35 34v285H694Z" fill="url(#teal)"/>
+      <rect x="733" y="461" width="151" height="301" rx="18" fill="#09283c" stroke="#43dfd5" stroke-width="7"/>
+      <circle cx="809" cy="529" r="28" fill="#008d9a"/>
+      <circle cx="809" cy="529" r="12" fill="#91e8e2"/>
+      <circle cx="809" cy="649" r="66" fill="#00a8aa"/>
+      <circle cx="809" cy="649" r="47" fill="#071d31"/>
+      <circle cx="809" cy="649" r="22" fill="#157083"/>
+    </g>
+
+    <!-- Calendar -->
+    <g transform="rotate(-5 318 681)" filter="url(#shadow)">
+      <rect x="161" y="486" width="317" height="360" rx="48" fill="url(#fabric)"/>
+      <path d="M161 534c0-27 21-48 48-48h221c27 0 48 21 48 48v66H161Z" fill="url(#teal)"/>
+      <circle cx="225" cy="511" r="29" fill="#05253a"/>
+      <circle cx="385" cy="511" r="29" fill="#05253a"/>
+      <rect x="209" y="452" width="34" height="89" rx="17" fill="url(#teal)"/>
+      <rect x="369" y="452" width="34" height="89" rx="17" fill="url(#teal)"/>
+      <g fill="#ccdae3">
+        <rect x="195" y="630" width="73" height="62" rx="12"/>
+        <rect x="283" y="630" width="73" height="62" rx="12"/>
+        <rect x="371" y="630" width="73" height="62" rx="12"/>
+        <rect x="195" y="707" width="73" height="62" rx="12"/>
+        <rect x="371" y="707" width="73" height="62" rx="12"/>
+        <rect x="195" y="784" width="73" height="42" rx="12"/>
+        <rect x="283" y="784" width="73" height="42" rx="12"/>
+        <rect x="371" y="784" width="73" height="42" rx="12"/>
+      </g>
+      <rect x="283" y="707" width="73" height="62" rx="12" fill="url(#tealDark)"/>
+      <path d="m302 739 13 13 26-32" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Folding chair -->
+    <g filter="url(#shadow)">
+      <path d="M505 824 568 580c5-20 23-34 44-34h48c22 0 41 16 45 38l47 240" fill="none" stroke="url(#fabric)" stroke-width="28" stroke-linejoin="round"/>
+      <path d="M570 601h126" stroke="#d5e3ea" stroke-width="25" stroke-linecap="round"/>
+      <path d="M526 704h158" stroke="url(#fabric)" stroke-width="29" stroke-linecap="round"/>
+      <path d="m545 715-46 127M657 715l50 127" stroke="#dceaf0" stroke-width="15"/>
+    </g>
+
+    <!-- Dressed table -->
+    <g filter="url(#shadow)">
+      <path d="M617 651h292l28 182c-24 17-48 17-72 1-23 24-49 24-76 2-26 25-53 25-80 0-27 20-54 21-82 2-24 17-47 17-70 0Z" fill="url(#fabric)"/>
+      <path d="M673 668 648 830M729 668l-7 178M788 668l8 178M847 668l25 165" stroke="#c8dae3" stroke-width="11" opacity=".58"/>
+      <ellipse cx="763" cy="652" rx="154" ry="28" fill="#fff"/>
+      <ellipse cx="763" cy="656" rx="151" ry="24" fill="#edf4f7" opacity=".7"/>
+    </g>
+  </g>
+  <rect x="60" y="60" width="904" height="904" rx="230" fill="none" stroke="#0e7782" stroke-width="2" opacity=".45"/>
+</svg>

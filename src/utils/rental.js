@@ -40,6 +40,10 @@ export function reservationTotal(reservation, items) {
   return linesTotal + Number(reservation.deliveryCharge || 0) + Number(reservation.additionalCharges || 0)
 }
 
+export function rentalTotal(rental) {
+  return Number(rental.rentalAmount || 0) + Number(rental.deliveryCharge || 0) + Number(rental.additionalCharges || 0)
+}
+
 export function totalPaid(rentalId, payments) {
   return payments
     .filter((payment) => payment.rentalId === rentalId)

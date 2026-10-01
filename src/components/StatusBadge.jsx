@@ -2,9 +2,9 @@ export function StatusBadge({ status }) {
   const lowered = String(status).toLowerCase()
   const tone = lowered.includes('cancel') || lowered.includes('damage') || lowered.includes('missing') || lowered.includes('overdue') || lowered.includes('error')
     ? 'danger'
-    : lowered.includes('pending') || lowered.includes('partial') || lowered.includes('ready') || lowered.includes('due') || lowered === 'unpaid'
+    : lowered.includes('pending') || lowered.includes('partial') || lowered.includes('ready') || lowered.includes('due') || lowered === 'unpaid' || lowered === 'reserved'
       ? 'warning'
-      : lowered.includes('active') || lowered === 'paid' || lowered.includes('available') || lowered.includes('completed') || lowered.includes('delivered') || lowered.includes('returned')
+      : lowered.includes('active') || lowered === 'paid' || lowered === 'released' || lowered.includes('available') || lowered.includes('completed') || lowered.includes('delivered') || lowered.includes('returned')
         ? 'success'
         : lowered.includes('inactive') || lowered.includes('archived') || lowered.includes('draft')
           ? 'neutral'
@@ -16,5 +16,5 @@ export function StatusBadge({ status }) {
     info: 'border-information-indicator/20 bg-information-soft text-information',
     neutral: 'border-border bg-status-neutral-soft text-status-neutral',
   }
-  return <span className={`inline-flex min-h-6 items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tones[tone]}`}>{status}</span>
+  return <span className={`inline-flex min-h-6 items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${tones[tone]}`}><span className="size-1.5 rounded-full bg-current opacity-70" aria-hidden="true" />{status}</span>
 }

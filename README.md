@@ -49,6 +49,8 @@ npx supabase db push     # linked remote project: migrations only
 - `supabase/migrations/` contains the schema, RLS policies, availability helpers, and transactional return workflow.
 - `supabase/seed.sql` inserts sample business data for the operational modules.
 - `supabase/schema.sql` remains as a SQL Editor-friendly schema-only copy.
+- Item photos are stored in the public `item-images` bucket. Uploads are limited to authenticated owner and inventory roles.
+- Owners create authentication accounts from the Users page through the protected `admin-create-user` Edge Function.
 
 The seed intentionally creates no `auth.users` or `profiles` rows. Create the first
 user in Supabase Authentication, then add its owner profile manually:

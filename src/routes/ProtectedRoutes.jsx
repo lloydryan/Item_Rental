@@ -9,6 +9,8 @@ const Customers = lazy(() => import('../pages/Customers').then((module) => ({ de
 const Dashboard = lazy(() => import('../pages/Dashboard').then((module) => ({ default: module.Dashboard })))
 const Deliveries = lazy(() => import('../pages/Deliveries').then((module) => ({ default: module.Deliveries })))
 const Items = lazy(() => import('../pages/Items').then((module) => ({ default: module.Items })))
+const InventoryMovements = lazy(() => import('../pages/InventoryMovements').then((module) => ({ default: module.InventoryMovements })))
+const Maintenance = lazy(() => import('../pages/Maintenance').then((module) => ({ default: module.Maintenance })))
 const Login = lazy(() => import('../pages/Login').then((module) => ({ default: module.Login })))
 const Payments = lazy(() => import('../pages/Payments').then((module) => ({ default: module.Payments })))
 const Rentals = lazy(() => import('../pages/Rentals').then((module) => ({ default: module.Rentals })))
@@ -17,6 +19,7 @@ const Reservations = lazy(() => import('../pages/Reservations').then((module) =>
 const NewReservation = lazy(() => import('../pages/NewReservation').then((module) => ({ default: module.NewReservation })))
 const Returns = lazy(() => import('../pages/Returns').then((module) => ({ default: module.Returns })))
 const UsersPage = lazy(() => import('../pages/UsersPage').then((module) => ({ default: module.UsersPage })))
+const Profile = lazy(() => import('../pages/Profile').then((module) => ({ default: module.Profile })))
 
 function RouteSkeleton() {
   return <div className="grid gap-6" aria-label="Loading page"><div className="grid gap-2"><Skeleton className="h-3 w-32" /><Skeleton className="h-8 w-56" /></div><Skeleton className="h-80 w-full" /></div>
@@ -30,7 +33,7 @@ export function AppRoutes({ state, actions, currentUser, onLogin, onLogout }) {
         path="/*"
         element={
           currentUser ? (
-            <Shell currentUser={currentUser} onLogout={onLogout}>
+            <Shell state={state} currentUser={currentUser} onLogout={onLogout}>
               <ProtectedRoutes state={state} actions={actions} currentUser={currentUser} />
             </Shell>
           ) : (
@@ -56,6 +59,8 @@ function ProtectedRoutes({ state, actions, currentUser }) {
       <Route path="/dashboard" element={guard('dashboard', <Dashboard state={state} />)} />
       <Route path="/customers" element={guard('customers', <Customers state={state} actions={actions} />)} />
       <Route path="/items" element={guard('items', <Items state={state} actions={actions} />)} />
+      <Route path="/inventory-movements" element={guard('inventoryMovements', <InventoryMovements state={state} />)} />
+      <Route path="/maintenance" element={guard('maintenance', <Maintenance state={state} actions={actions} />)} />
       <Route path="/reservations" element={guard('reservations', <Reservations state={state} actions={actions} />)} />
       <Route path="/reservations/new" element={guard('reservations', <NewReservation state={state} actions={actions} />)} />
       <Route path="/rentals" element={guard('rentals', <Rentals state={state} actions={actions} />)} />
@@ -64,6 +69,7 @@ function ProtectedRoutes({ state, actions, currentUser }) {
       <Route path="/returns" element={guard('returns', <Returns state={state} actions={actions} />)} />
       <Route path="/reports" element={guard('reports', <Reports state={state} />)} />
       <Route path="/users" element={guard('users', <UsersPage state={state} actions={actions} currentUser={currentUser} />)} />
+      <Route path="/profile" element={<Profile currentUser={currentUser} actions={actions} />} />
       <Route path="*" element={<Navigate to={defaultPath} replace />} />
     </Routes>
   )

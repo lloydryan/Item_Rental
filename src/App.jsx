@@ -9,13 +9,13 @@ import { useToast } from './components/toast-context'
 
 const emptyState = {
   users: [], categories: [], items: [], customers: [], reservations: [],
-  rentals: [], payments: [], deliveries: [], returns: [],
+  rentals: [], payments: [], deliveries: [], returns: [], inventoryMovements: [], stockAdjustments: [],
 }
 
 function SystemMessage({ title, message, action }) {
   return (
     <main className="grid min-h-screen place-items-center bg-background p-6">
-      <section className="w-full max-w-lg rounded-2xl border bg-card p-8 shadow-sm" role="alert">
+      <section className="w-full max-w-lg rounded-xl border bg-card p-8 shadow-sm" role="alert">
         <p className="text-xs font-bold uppercase tracking-[0.12em] text-primary">LR Event Rental Services</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground">{title}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{message}</p>
@@ -27,13 +27,16 @@ function SystemMessage({ title, message, action }) {
 
 function AppSkeleton() {
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6" aria-label="Loading application">
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[16rem_1fr]">
-        <Skeleton className="hidden min-h-[calc(100vh-3rem)] lg:block" />
-        <div className="grid content-start gap-6">
-          <div className="flex items-center justify-between rounded-xl border bg-card p-5"><div className="grid gap-2"><Skeleton className="h-3 w-28" /><Skeleton className="h-7 w-48" /></div><Skeleton className="size-10" /></div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Skeleton className="h-36 sm:col-span-2" /><Skeleton className="h-36" /><Skeleton className="h-36" /></div>
-          <Skeleton className="h-80" />
+    <div className="min-h-screen bg-background" aria-label="Loading application" aria-busy="true">
+      <div className="grid min-h-screen lg:grid-cols-[16rem_1fr]">
+        <Skeleton className="hidden rounded-none bg-sidebar lg:block" />
+        <div className="min-w-0">
+          <div className="flex h-16 items-center justify-between border-b bg-card px-4 sm:px-6 lg:px-8"><div className="grid gap-1.5"><Skeleton className="h-2.5 w-20" /><Skeleton className="h-4 w-28" /></div><Skeleton className="size-9 rounded-full" /></div>
+          <main className="mx-auto grid w-full max-w-[1440px] content-start gap-6 p-4 sm:p-6 lg:px-8 lg:py-7">
+            <div className="grid gap-2 border-b border-border-subtle pb-5"><Skeleton className="h-2.5 w-32" /><Skeleton className="h-8 w-52" /><Skeleton className="h-4 w-96 max-w-full" /></div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Skeleton className="h-40 sm:col-span-2" /><Skeleton className="h-40" /><Skeleton className="h-40" /><Skeleton className="h-32" /><Skeleton className="h-32" /><Skeleton className="h-32" /><Skeleton className="h-32" /></div>
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.5fr)]"><Skeleton className="h-80" /><Skeleton className="h-72" /></div>
+          </main>
         </div>
       </div>
     </div>
@@ -104,20 +107,33 @@ function App() {
   }
 
   async function runMutation(operation, successMessage) {
-    await operation()
+    const result = await operation()
     await hydrate(authUser, false)
     toast(successMessage)
+    return result
   }
 
   const actions = {
     createCustomer: (form) => runMutation(() => database.createCustomer(form), 'Customer successfully created.'),
+    createCategory: (form) => runMutation(() => database.createCategory(form), 'Item category successfully created.'),
     createItem: (form) => runMutation(() => database.createItem(form), 'Item successfully added.'),
+    updateItem: (id, form, previousImageUrl) => runMutation(() => database.updateItem(id, form, previousImageUrl), 'Item successfully updated.'),
+    adjustItemStock: (itemId, adjustmentType, quantity, reason) => runMutation(
+      () => database.adjustItemStock(itemId, adjustmentType, quantity, reason),
+      adjustmentType === 'Add' ? 'Stock successfully added.' : adjustmentType === 'Remove' ? 'Stock successfully removed.' : 'Unavailable stock successfully disposed.',
+    ),
+    startInventoryMovement: (form) => runMutation(() => database.startInventoryMovement(form), `${form.quantity} item(s) moved to ${form.movementType.toLowerCase()}.`),
+    completeInventoryMovement: (id) => runMutation(() => database.completeInventoryMovement(id), 'Fixed items returned to available inventory.'),
+    createUser: (form) => runMutation(() => database.createUser(form), 'Employee account successfully created.'),
+    changePassword: (currentPassword, newPassword) => runMutation(() => database.changePassword(currentPassword, newPassword), 'Password successfully changed.'),
     createReservation: (form) => runMutation(() => database.createReservation(form, currentUser.id, state.items), 'Reservation successfully created.'),
+    updateReservationStatus: (id, reservationStatus) => runMutation(() => database.updateReservationStatus(id, reservationStatus), reservationStatus === 'Cancelled' ? 'Reservation cancelled.' : 'Reservation confirmed.'),
+    createRentalFromReservation: (id) => runMutation(() => database.createRentalFromReservation(id), 'Rental created and ready for payment.'),
     createPayment: (form) => runMutation(() => database.createPayment(form), 'Payment successfully recorded.'),
-    updateRentalStatus: (id, rentalStatus) => runMutation(() => database.updateRentalStatus(id, rentalStatus), 'Rental status updated.'),
+    updateRentalStatus: (id, rentalStatus) => runMutation(() => database.updateRentalStatus(id, rentalStatus), rentalStatus === 'Returned' ? 'Return sent to inventory for inspection.' : 'Rental status updated.'),
     updateDelivery: (id, patch) => runMutation(() => database.updateDelivery(id, patch), 'Delivery status updated.'),
     updateProfileRole: (id, role) => runMutation(() => database.updateProfileRole(id, role), 'Employee role updated.'),
-    completeReturn: (id) => runMutation(() => database.completeReturn(id), 'Return inspection completed.'),
+    completeReturn: (id, inspection) => runMutation(() => database.completeReturn(id, inspection), 'Inspection completed and rental closed.'),
   }
 
   if (status === 'configuration-error') {
