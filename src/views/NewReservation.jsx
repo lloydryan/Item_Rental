@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowLeft, Check, Plus } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '../lib/navigation'
 import { Button } from '../components/Button'
 import { Alert } from '../components/Feedback'
 import { Field, SelectField } from '../components/Field'

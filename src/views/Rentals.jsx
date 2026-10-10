@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CreditCard, RefreshCw } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '../lib/navigation'
 import { Button } from '../components/Button'
 import { DataTable } from '../components/DataTable'
 import { Alert } from '../components/Feedback'

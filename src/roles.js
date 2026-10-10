@@ -8,6 +8,6 @@ export const roles = {
 export const roleAccess = {
   owner: ['dashboard', 'customers', 'items', 'inventoryMovements', 'maintenance', 'reservations', 'rentals', 'payments', 'deliveries', 'returns', 'reports', 'users'],
   rental: ['dashboard', 'customers', 'reservations', 'rentals', 'payments', 'reports'],
-  inventory: ['dashboard', 'items', 'inventoryMovements', 'maintenance', 'rentals', 'returns', 'reports'],
+  inventory: ['dashboard', 'items', 'inventoryMovements', 'maintenance', 'returns', 'reports'],
   delivery: ['dashboard', 'deliveries'],
 }

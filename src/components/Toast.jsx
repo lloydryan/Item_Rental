@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useState } from 'react'
 import { CheckCircle2, X, XCircle } from 'lucide-react'
 import { ToastContext } from './toast-context'

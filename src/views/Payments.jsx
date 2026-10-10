@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '../components/Button'
 import { SummaryGroup, SummaryItem } from '../components/Card'
 import { DataTable } from '../components/DataTable'
@@ -14,7 +14,7 @@ import { customerName, reservationById } from '../utils/lookups'
 import { peso, rentalTotal, totalPaid } from '../utils/rental'
 
 export function Payments({ state, actions }) {
-  const [searchParams] = useSearchParams()
+  const searchParams = useSearchParams()
   const requestedRentalId = searchParams.get('rental')
   const initialRentalId = state.rentals.some((rental) => rental.id === requestedRentalId) ? requestedRentalId : state.rentals[0]?.id
   const [open, setOpen] = useState(Boolean(requestedRentalId && initialRentalId))

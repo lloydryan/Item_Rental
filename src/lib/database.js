@@ -200,6 +200,23 @@ export async function createUser(form) {
   return result.data
 }
 
+export async function resetUserPassword(userId, password) {
+  const result = await supabase.functions.invoke('admin-reset-password', {
+    body: { userId, password },
+  })
+  if (result.error) {
+    let message = result.error.message
+    try {
+      const details = await result.error.context?.json()
+      if (details?.error) message = details.error
+    } catch {
+      // Keep the SDK error when the response does not contain JSON.
+    }
+    throw new Error(message)
+  }
+  return result.data
+}
+
 export async function changePassword(currentPassword, newPassword) {
   const result = await supabase.auth.updateUser({
     password: newPassword,

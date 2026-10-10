@@ -1,18 +1,25 @@
 import { useState } from 'react'
 import { BadgeCheck, ChevronLeft, ChevronRight, LogOut, Menu, UserRound, X } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { navItems } from '../constants'
 import { roleAccess, roles } from '../roles'
 import { Button } from '../components/Button'
 
+function NavLink({ to, className, ...props }) {
+  const pathname = usePathname()
+  const isActive = pathname === to || pathname.startsWith(`${to}/`)
+  return <Link href={to} scroll={false} aria-current={isActive ? 'page' : undefined} className={typeof className === 'function' ? className({ isActive }) : className} {...props} />
+}
+
 export function Shell({ state, currentUser, onLogout, children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
-  const location = useLocation()
+  const pathname = usePathname()
   const allowed = roleAccess[currentUser.role]
   const visibleNav = navItems.filter((item) => allowed.includes(item.key))
   const navGroups = [...new Set(visibleNav.map((item) => item.group))]
-  const currentPage = location.pathname.startsWith('/profile') ? 'My profile' : navItems.find((item) => location.pathname.startsWith(item.path))?.label || 'Workspace'
+  const currentPage = pathname.startsWith('/profile') ? 'My profile' : navItems.find((item) => pathname.startsWith(item.path))?.label || 'Workspace'
   const activeMaintenanceJobs = (state.inventoryMovements || []).filter((movement) => movement.status === 'In Progress').length
 
   const navigation = (

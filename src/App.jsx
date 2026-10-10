@@ -1,6 +1,11 @@
+'use client'
+
 import { useCallback, useEffect, useState } from 'react'
-import { BrowserRouter } from 'react-router-dom'
-import { AppRoutes } from './routes/ProtectedRoutes'
+import { usePathname, useRouter } from 'next/navigation'
+import { AppContext } from './app-context'
+import { navItems } from './constants'
+import { roleAccess } from './roles'
+import { Shell } from './layouts/Shell'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import * as database from './lib/database'
 import { Button } from './components/Button'
@@ -43,13 +48,33 @@ function AppSkeleton() {
   )
 }
 
-function App() {
+const routeAccess = {
+  '/dashboard': 'dashboard', '/customers': 'customers', '/items': 'items',
+  '/inventory-movements': 'inventoryMovements', '/maintenance': 'maintenance',
+  '/reservations': 'reservations', '/reservations/new': 'reservations',
+  '/rentals': 'rentals', '/payments': 'payments', '/deliveries': 'deliveries',
+  '/returns': 'returns', '/reports': 'reports', '/users': 'users',
+  '/profile': null,
+}
+
+function App({ children }) {
+  const pathname = usePathname()
+  const router = useRouter()
   const toast = useToast()
   const [state, setState] = useState(emptyState)
   const [currentUser, setCurrentUser] = useState(null)
   const [authUser, setAuthUser] = useState(null)
   const [status, setStatus] = useState(isSupabaseConfigured ? 'loading' : 'configuration-error')
   const [error, setError] = useState('')
+  const access = currentUser ? roleAccess[currentUser.role] || [] : []
+  const defaultPath = navItems.find((item) => access.includes(item.key))?.path || '/dashboard'
+  const destination = status === 'ready' && currentUser
+    ? pathname === '/login' ? '/dashboard' : pathname === '/' || !(pathname in routeAccess) || (routeAccess[pathname] && !access.includes(routeAccess[pathname])) ? defaultPath : null
+    : status === 'signed-out' && pathname !== '/login' ? '/login' : null
+
+  useEffect(() => {
+    if (destination && destination !== pathname) router.replace(destination, { scroll: false })
+  }, [destination, pathname, router])
 
   const hydrate = useCallback(async (user, showLoading = true) => {
     if (showLoading) setStatus('loading')
@@ -125,6 +150,7 @@ function App() {
     startInventoryMovement: (form) => runMutation(() => database.startInventoryMovement(form), `${form.quantity} item(s) moved to ${form.movementType.toLowerCase()}.`),
     completeInventoryMovement: (id) => runMutation(() => database.completeInventoryMovement(id), 'Fixed items returned to available inventory.'),
     createUser: (form) => runMutation(() => database.createUser(form), 'Employee account successfully created.'),
+    resetUserPassword: (id, password) => runMutation(() => database.resetUserPassword(id, password), 'Employee password successfully reset.'),
     changePassword: (currentPassword, newPassword) => runMutation(() => database.changePassword(currentPassword, newPassword), 'Password successfully changed.'),
     createReservation: (form) => runMutation(() => database.createReservation(form, currentUser.id, state.items), 'Reservation successfully created.'),
     updateReservationStatus: (id, reservationStatus) => runMutation(() => database.updateReservationStatus(id, reservationStatus), reservationStatus === 'Cancelled' ? 'Reservation cancelled.' : 'Reservation confirmed.'),
@@ -137,7 +163,7 @@ function App() {
   }
 
   if (status === 'configuration-error') {
-    return <SystemMessage title="Supabase is not configured" message="Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env.local, then restart the development server." />
+    return <SystemMessage title="Supabase is not configured" message="Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY to .env.local, then restart the development server." />
   }
   if (status === 'loading') {
     return <AppSkeleton />
@@ -149,16 +175,12 @@ function App() {
     return <SystemMessage title="We couldn't load the rental data" message={error} action={<Button className="mt-5" type="button" onClick={() => authUser ? hydrate(authUser) : setStatus('signed-out')}>Try again</Button>} />
   }
 
+  if (destination) return <AppSkeleton />
+
   return (
-    <BrowserRouter>
-      <AppRoutes
-        state={state}
-        actions={actions}
-        currentUser={currentUser}
-        onLogin={login}
-        onLogout={logout}
-      />
-    </BrowserRouter>
+    <AppContext.Provider value={{ state, actions, currentUser, onLogin: login }}>
+      {currentUser ? <Shell state={state} currentUser={currentUser} onLogout={logout}>{children}</Shell> : children}
+    </AppContext.Provider>
   )
 }
 

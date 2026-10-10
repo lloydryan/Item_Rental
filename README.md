@@ -19,9 +19,9 @@ A simple web-based event rental management system for LR Event Rental Services.
 
 ## Tech Stack
 
-- ReactJS + Vite
+- React 19 + Next.js App Router
 - JavaScript
-- React Router
+- Next.js file-based routing
 - Supabase client configuration
 - Tailwind CSS 4
 - Lucide React icons
@@ -33,8 +33,14 @@ npm install
 npm run dev
 ```
 
+Open http://localhost:3000. Run `npm run build` to validate the production build,
+or `npm run start` to serve it after building.
+
 The application requires a configured Supabase project. Copy `.env.example` to
-`.env.local`, add the project URL and publishable key, and restart Vite. Staff log
+`.env.local`, add the project URL and publishable key, and restart Next.js. Existing
+`.env.local` files with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
+continue to work through `next.config.mjs`; new setups should use the
+`NEXT_PUBLIC_` names. Staff log
 in using real Supabase Authentication accounts; there is no in-browser demo mode.
 
 ## Database

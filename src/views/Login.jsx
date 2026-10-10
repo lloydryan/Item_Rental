@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Eye, EyeOff, KeyRound, PackageCheck, ShieldCheck, Truck } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '../lib/navigation'
 import { Button } from '../components/Button'
 import { Alert } from '../components/Feedback'
 import { controlClasses } from '../components/Field'
