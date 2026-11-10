@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BadgeCheck, ChevronLeft, ChevronRight, LogOut, Menu, UserRound, X } from 'lucide-react'
+import { BadgeCheck, ChevronDown, ChevronLeft, ChevronRight, LogOut, Menu, UserRound, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { navItems } from '../constants'
@@ -19,6 +19,10 @@ export function Shell({ state, currentUser, onLogout, children }) {
   const allowed = roleAccess[currentUser.role]
   const visibleNav = navItems.filter((item) => allowed.includes(item.key))
   const navGroups = [...new Set(visibleNav.map((item) => item.group))]
+  const activeNavItem = visibleNav.find((item) => pathname === item.path || pathname.startsWith(`${item.path}/`))
+  const activeGroup = activeNavItem?.group || navGroups[0]
+  const [groupSelection, setGroupSelection] = useState(null)
+  const expandedGroup = groupSelection?.pathname === pathname ? groupSelection.group : activeGroup
   const currentPage = pathname.startsWith('/profile') ? 'My profile' : navItems.find((item) => pathname.startsWith(item.path))?.label || 'Workspace'
   const activeMaintenanceJobs = (state.inventoryMovements || []).filter((movement) => movement.status === 'In Progress').length
 
@@ -29,24 +33,47 @@ export function Shell({ state, currentUser, onLogout, children }) {
         {!collapsed && <div className="min-w-0"><strong className="block truncate text-[13px] font-semibold tracking-tight text-sidebar-foreground">LR Event Rental</strong><span className="block truncate text-[11px] text-sidebar-muted">Operations workspace</span></div>}
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
-        <div className="grid gap-5">
-          {navGroups.map((group) => <section key={group}>{!collapsed && <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-sidebar-muted/55">{group}</p>}<div className="grid gap-0.5">{visibleNav.filter((item) => item.group === group).map((item) => {
-            const Icon = item.icon
-            const notificationCount = item.key === 'maintenance' ? activeMaintenanceJobs : 0
-            return (
-              <NavLink
-                key={item.key}
-                to={item.path}
-                title={collapsed ? `${item.label}${notificationCount ? ` (${notificationCount} active job${notificationCount === 1 ? '' : 's'})` : ''}` : undefined}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) => `relative flex min-h-10 items-center rounded-lg text-[13px] font-medium transition-colors duration-150 ${collapsed ? 'justify-center px-2' : 'gap-3 px-3'} ${isActive ? 'bg-primary/15 text-sidebar-foreground before:absolute before:inset-y-2.5 before:left-0 before:w-0.5 before:rounded-full before:bg-primary-accent' : 'text-sidebar-muted hover:bg-white/6 hover:text-sidebar-foreground'}`}
+        <div className={collapsed ? 'grid gap-2' : 'grid gap-1'}>
+          {navGroups.map((group) => {
+            const groupItems = visibleNav.filter((item) => item.group === group)
+            const isExpanded = expandedGroup === group
+            const isActiveGroup = activeGroup === group
+            const groupId = `sidebar-group-${group.toLowerCase().replaceAll(' ', '-')}`
+            const groupNotificationCount = group === 'Operations' ? activeMaintenanceJobs : 0
+
+            return <section key={group}>
+              {!collapsed && <button
+                className={`flex min-h-8 w-full items-center gap-2 rounded-md px-3 text-left text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors ${isExpanded || isActiveGroup ? 'text-sidebar-foreground' : 'text-sidebar-muted/65 hover:bg-white/6 hover:text-sidebar-foreground'}`}
+                type="button"
+                aria-expanded={isExpanded}
+                aria-controls={groupId}
+                onClick={() => setGroupSelection({ pathname, group: isExpanded ? '' : group })}
               >
-                <Icon className="size-[18px] shrink-0" aria-hidden="true" />
-                {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
-                {notificationCount > 0 && <span className={`${collapsed ? 'absolute -right-0.5 top-0 min-w-4 px-1 text-[9px]' : 'min-w-5 px-1.5 text-[10px]'} grid h-5 shrink-0 place-items-center rounded-full bg-warning-indicator font-bold leading-none tabular-nums text-sidebar`} aria-label={`${notificationCount} active job${notificationCount === 1 ? '' : 's'}`}>{notificationCount}</span>}
-              </NavLink>
-            )
-          })}</div></section>)}
+                <span className="min-w-0 flex-1 truncate">{group}</span>
+                {!isExpanded && groupNotificationCount > 0 && <span className="grid h-4 min-w-4 place-items-center rounded-full bg-warning-indicator px-1 text-[9px] font-bold leading-none tabular-nums text-sidebar" aria-label={`${groupNotificationCount} active maintenance job${groupNotificationCount === 1 ? '' : 's'}`}>{groupNotificationCount}</span>}
+                <ChevronDown className={`size-3.5 shrink-0 transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+              </button>}
+              <div id={groupId} className={`grid gap-0.5 ${!collapsed && !isExpanded ? 'hidden' : ''}`}>
+                {groupItems.map((item) => {
+                  const Icon = item.icon
+                  const notificationCount = item.key === 'maintenance' ? activeMaintenanceJobs : 0
+                  return (
+                    <NavLink
+                      key={item.key}
+                      to={item.path}
+                      title={collapsed ? `${item.label}${notificationCount ? ` (${notificationCount} active job${notificationCount === 1 ? '' : 's'})` : ''}` : undefined}
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) => `relative flex min-h-10 items-center rounded-lg text-[13px] font-medium transition-colors duration-150 ${collapsed ? 'justify-center px-2' : 'gap-3 px-3'} ${isActive ? 'bg-primary/15 text-sidebar-foreground before:absolute before:inset-y-2.5 before:left-0 before:w-0.5 before:rounded-full before:bg-primary-accent' : 'text-sidebar-muted hover:bg-white/6 hover:text-sidebar-foreground'}`}
+                    >
+                      <Icon className="size-[18px] shrink-0" aria-hidden="true" />
+                      {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
+                      {notificationCount > 0 && <span className={`${collapsed ? 'absolute -right-0.5 top-0 min-w-4 px-1 text-[9px]' : 'min-w-5 px-1.5 text-[10px]'} grid h-5 shrink-0 place-items-center rounded-full bg-warning-indicator font-bold leading-none tabular-nums text-sidebar`} aria-label={`${notificationCount} active job${notificationCount === 1 ? '' : 's'}`}>{notificationCount}</span>}
+                    </NavLink>
+                  )
+                })}
+              </div>
+            </section>
+          })}
         </div>
       </nav>
       <div className="border-t border-white/8 p-3">
