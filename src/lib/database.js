@@ -250,6 +250,7 @@ export async function createPayment(form) {
     p_amount: Number(form.amount),
     p_payment_date: form.paymentDate,
     p_method: form.method.trim(),
+    p_request_key: form.requestKey,
     p_reference_number: form.referenceNumber.trim() || null,
     p_notes: form.notes?.trim() || null,
   }))

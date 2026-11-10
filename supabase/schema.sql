@@ -90,6 +90,7 @@ create table public.rental_transactions (
 create table public.payments (
   id uuid primary key default gen_random_uuid(),
   rental_id uuid not null references public.rental_transactions(id) on delete cascade,
+  request_key uuid not null default gen_random_uuid() unique,
   amount numeric(10, 2) not null check (amount > 0),
   payment_date date not null default current_date,
   method text not null default 'Cash',
@@ -939,6 +940,7 @@ create or replace function public.record_rental_payment(
   p_amount numeric,
   p_payment_date date,
   p_method text,
+  p_request_key uuid,
   p_reference_number text default null,
   p_notes text default null
 ) returns uuid
@@ -952,6 +954,7 @@ declare
   amount_paid numeric(10, 2);
   remaining_balance numeric(10, 2);
   payment_id uuid;
+  existing_rental_id uuid;
 begin
   if coalesce(public.current_app_role()::text, '') not in ('owner', 'rental') then
     raise exception 'You do not have permission to record payments.';
@@ -965,8 +968,16 @@ begin
     raise exception 'Payment amount must be greater than zero.';
   end if;
 
+  if p_amount <> round(p_amount, 2) then
+    raise exception 'Payment amount cannot have more than two decimal places.';
+  end if;
+
   if p_payment_date is null then
     raise exception 'Payment date is required.';
+  end if;
+
+  if p_request_key is null then
+    raise exception 'Payment request key is required.';
   end if;
 
   if p_method <> 'Cash' and nullif(trim(p_reference_number), '') is null then
@@ -980,6 +991,17 @@ begin
 
   if not found then
     raise exception 'Rental transaction was not found.';
+  end if;
+
+  select id, rental_id into payment_id, existing_rental_id
+  from public.payments
+  where request_key = p_request_key;
+
+  if found then
+    if existing_rental_id <> p_rental_id then
+      raise exception 'Payment request key is already in use.';
+    end if;
+    return payment_id;
   end if;
 
   rental_total := rental_record.rental_amount + rental_record.delivery_charge + rental_record.additional_charges;
@@ -1001,6 +1023,7 @@ begin
 
   insert into public.payments (
     rental_id,
+    request_key,
     amount,
     payment_date,
     method,
@@ -1008,6 +1031,7 @@ begin
     notes
   ) values (
     p_rental_id,
+    p_request_key,
     p_amount,
     p_payment_date,
     p_method,
@@ -1020,8 +1044,8 @@ begin
 end;
 $$;
 
-revoke all on function public.record_rental_payment(uuid, numeric, date, text, text, text) from public;
-grant execute on function public.record_rental_payment(uuid, numeric, date, text, text, text) to authenticated;
+revoke all on function public.record_rental_payment(uuid, numeric, date, text, uuid, text, text) from public;
+grant execute on function public.record_rental_payment(uuid, numeric, date, text, uuid, text, text) to authenticated;
 
 -- Sample data lives in supabase/seed.sql. Authentication users and the first
 -- owner profile are intentionally not seeded so they can be created manually.

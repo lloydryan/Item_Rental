@@ -47,6 +47,8 @@ export function Rentals({ state, actions }) {
     const total = rentalTotal(rental)
     const paid = totalPaid(rental.id, state.payments)
     const displayStatus = isOverdue(rental) ? 'Overdue' : rental.status
+    const canChangeStatus = !['Returned', 'Completed'].includes(rental.status)
+    const hasBalance = Math.round((total - paid) * 100) > 0
     return [
       rental.id.slice(0, 8),
       customerName(state, reservation.customerId),
@@ -54,10 +56,10 @@ export function Rentals({ state, actions }) {
       peso.format(total),
       peso.format(Math.max(0, total - paid)),
       <StatusBadge key={rental.id} status={displayStatus} />,
-      <ActionMenu key={`${rental.id}-actions`}>
-        <MenuItem onClick={() => navigate(`/payments?rental=${rental.id}`)}><CreditCard className="size-4" />Record payment</MenuItem>
-        {!['Returned', 'Completed'].includes(rental.status) && <MenuItem onClick={() => openStatus(rental)}><RefreshCw className="size-4" />Change status</MenuItem>}
-      </ActionMenu>,
+      hasBalance || canChangeStatus ? <ActionMenu key={`${rental.id}-actions`}>
+        {hasBalance && <MenuItem onClick={() => navigate(`/payments?rental=${rental.id}`)}><CreditCard className="size-4" />Record payment</MenuItem>}
+        {canChangeStatus && <MenuItem onClick={() => openStatus(rental)}><RefreshCw className="size-4" />Change status</MenuItem>}
+      </ActionMenu> : <span key={`${rental.id}-no-actions`} className="text-muted-foreground">—</span>,
     ]
   })
 
