@@ -42,7 +42,7 @@ export function Dialog({ open, onClose, title, description, children, footer, si
   const dialogRef = useRef(null)
   useDismiss(open, onClose, dialogRef)
   if (!open) return null
-  const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl' }
+  const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' }
   return (
     <div className="fixed inset-0 z-50 grid place-items-center p-4" role="presentation">
       <button className="absolute inset-0 bg-sidebar/55 backdrop-blur-[1px]" type="button" aria-label="Close dialog" onClick={onClose} />
