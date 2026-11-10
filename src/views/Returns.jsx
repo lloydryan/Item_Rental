@@ -189,9 +189,6 @@ export function Returns({ state, actions }) {
       >
         {inspection && <div className="grid gap-4">
           <Alert>{error}</Alert>
-          <div className="rounded-lg border border-information-indicator/25 bg-information-soft px-4 py-3 text-xs leading-5 text-information">
-            <strong className="font-semibold">How quantities work:</strong> Returned includes every unit received, including damaged units. Missing = released - returned; usable = returned - damaged.
-          </div>
           <div className="grid gap-3">
             {inspection.items.map((line) => {
               const quantities = inspectionQuantity(line)
