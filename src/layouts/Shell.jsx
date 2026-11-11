@@ -21,22 +21,21 @@ export function Shell({ state, currentUser, onLogout, children }) {
   const navGroups = [...new Set(visibleNav.map((item) => item.group))]
   const activeNavItem = visibleNav.find((item) => pathname === item.path || pathname.startsWith(`${item.path}/`))
   const activeGroup = activeNavItem?.group || navGroups[0]
-  const [groupSelection, setGroupSelection] = useState(null)
-  const expandedGroup = groupSelection?.pathname === pathname ? groupSelection.group : activeGroup
+  const [expandedGroups, setExpandedGroups] = useState(() => ({ [activeGroup]: true }))
   const currentPage = pathname.startsWith('/profile') ? 'My profile' : navItems.find((item) => pathname.startsWith(item.path))?.label || 'Workspace'
   const activeMaintenanceJobs = (state.inventoryMovements || []).filter((movement) => movement.status === 'In Progress').length
 
   const navigation = (
     <>
-      <div className={`flex h-17 items-center border-b border-white/8 ${collapsed ? 'justify-center px-3' : 'gap-3 px-4'}`}>
+      <div className={`flex h-17 shrink-0 items-center border-b border-white/8 ${collapsed ? 'justify-center px-3' : 'gap-3 px-4'}`}>
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm"><BadgeCheck className="size-5" /></span>
         {!collapsed && <div className="min-w-0"><strong className="block truncate text-[13px] font-semibold tracking-tight text-sidebar-foreground">LR Event Rental</strong><span className="block truncate text-[11px] text-sidebar-muted">Operations workspace</span></div>}
       </div>
-      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+      <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 [scrollbar-gutter:stable]" aria-label="Main navigation">
         <div className={collapsed ? 'grid gap-2' : 'grid gap-1'}>
           {navGroups.map((group) => {
             const groupItems = visibleNav.filter((item) => item.group === group)
-            const isExpanded = expandedGroup === group
+            const isExpanded = Boolean(expandedGroups[group])
             const isActiveGroup = activeGroup === group
             const groupId = `sidebar-group-${group.toLowerCase().replaceAll(' ', '-')}`
             const groupNotificationCount = group === 'Operations' ? activeMaintenanceJobs : 0
@@ -47,7 +46,7 @@ export function Shell({ state, currentUser, onLogout, children }) {
                 type="button"
                 aria-expanded={isExpanded}
                 aria-controls={groupId}
-                onClick={() => setGroupSelection({ pathname, group: isExpanded ? '' : group })}
+                onClick={() => setExpandedGroups((current) => ({ ...current, [group]: !current[group] }))}
               >
                 <span className="min-w-0 flex-1 truncate">{group}</span>
                 {!isExpanded && groupNotificationCount > 0 && <span className="grid h-4 min-w-4 place-items-center rounded-full bg-warning-indicator px-1 text-[9px] font-bold leading-none tabular-nums text-sidebar" aria-label={`${groupNotificationCount} active maintenance job${groupNotificationCount === 1 ? '' : 's'}`}>{groupNotificationCount}</span>}
@@ -76,7 +75,7 @@ export function Shell({ state, currentUser, onLogout, children }) {
           })}
         </div>
       </nav>
-      <div className="border-t border-white/8 p-3">
+      <div className="shrink-0 border-t border-white/8 p-3">
         <NavLink to="/profile" onClick={() => setMobileOpen(false)} title={collapsed ? 'My profile' : undefined} className={({ isActive }) => `mb-1 flex min-h-10 items-center rounded-lg transition-colors ${collapsed ? 'justify-center' : 'gap-3 px-2 py-2'} ${isActive ? 'bg-primary/10 text-sidebar-foreground' : 'text-sidebar-muted hover:bg-white/6 hover:text-sidebar-foreground'}`}>
           {collapsed ? <UserRound className="size-[18px]" /> : <><span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{currentUser.name.charAt(0).toUpperCase()}</span><div className="min-w-0"><strong className="block truncate text-sm text-sidebar-foreground">{currentUser.name}</strong><span className="block truncate text-xs text-sidebar-muted">{roles[currentUser.role]}</span></div></>}
         </NavLink>
