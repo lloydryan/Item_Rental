@@ -43,6 +43,17 @@ continue to work through `next.config.mjs`; new setups should use the
 `NEXT_PUBLIC_` names. Staff log
 in using real Supabase Authentication accounts; there is no in-browser demo mode.
 
+## Accounts
+
+All accounts use the password `12345678`.
+
+| Name | Email | Password | Role | Status |
+| --- | --- | --- | --- | --- |
+| Staff 1 | `staff1@gmail.com` | `12345678` | Inventory Staff | Active |
+| Staff2 | `staff2@gmail.com` | `12345678` | Rental Staff | Active |
+| Rider | `rider@gmail.com` | `12345678` | Delivery Personnel | Active |
+| ADMIN | `admin@gmail.com` | `12345678` | Owner / Manager | Active |
+
 ## Database
 
 The database now uses Supabase's standard migration and seed layout:
